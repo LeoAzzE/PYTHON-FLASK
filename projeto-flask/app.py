@@ -1,5 +1,4 @@
-from flask import Flask, make_response, jsonify, request
-import mysql.connector
+from flask import Flask, jsonify, request
 from flask_mysqldb import MySQL
 from config import config
 
@@ -20,8 +19,9 @@ def get_cursos():
             curso={'codigo':dado[0], 'nome':dado[1], 'creditos':dado[2]}
             cursos.append(curso)          
         return jsonify({'cursos':cursos, 'mensagem': "cursos listados"})
+    
     except Exception as ex:
-        return jsonify({'mensagem': "cursos listados"})
+        return jsonify({'mensagem': "ERROR"})
    
 @app.route('/cursos', methods=['POST'])
 def registrar_curso():
@@ -34,7 +34,7 @@ def registrar_curso():
         request.json['creditos'])
         cursor.execute(sql)
         conexao.connection.commit()
-        return jsonify({'mensagem:' 'curso registrado'})
+        return jsonify({'mensagem:' "curso registrado"})
     except Exception as ex:
         return jsonify({'mensagem': "ERROR"})
 
@@ -46,7 +46,7 @@ def delete_curso(codigo):
         sql = "DELETE FROM curso WHERE codigo = '{0}'".format(codigo)
         cursor.execute(sql)
         conexao.connection.commit()
-        return jsonify({'mensagem:' 'curso apagado'})
+        return jsonify({'mensagem:' "curso apagado"})
     except Exception as ex:
         return jsonify({'mensagem': "ERROR"})
 
@@ -63,7 +63,7 @@ def atualizar_curso(codigo):
         request.json['creditos'],codigo)
         cursor.execute(sql)
         conexao.connection.commit()
-        return jsonify({'mensagem:' 'curso atualizado'})
+        return jsonify({'mensagem:' "curso atualizado"})
     except Exception as ex:
         return jsonify({'mensagem': "ERROR"})
 
