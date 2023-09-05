@@ -1,52 +1,72 @@
-from flask import Flask, jsonify, request
+from flask import Flask, request, jsonify
+from flask_api import status
 
 app = Flask(__name__)
 
-listaPessoa = [
-    {
-        "id": 1,
-        "nome": 'Leo',
-        "idade": 21,
-        "cpf" : '222-222-222-42'
+jogadores = [     
+    {  
+        "id" : 1,
+        "nome": "Renato augusto",
+        "clube": "corinthians",
     },
     {
-        "id": 2,
-        "nome": 'Leona',
-        "idade": 26,
-        "cpf" : '333-333-333-21'
+        "id" : 2,
+        "nome": "Arrasca",
+        "clube": "Flamengo",
     },
+    {
+        "id" : 3,
+        "nome": "valverde",
+        "clube": "real madrid",
+    }
 ]
 
-@app.route("/pessoas", methods=['GET'])
-def getPessoas():
-    return jsonify(listaPessoa)
+@app.route("/jogadores", methods=['GET'])
+def getJogadores():
+    return jsonify(jogadores), status.HTTP_200_OK
 
-@app.route("/pessoas/<int:id>", methods=['GET'])
-def getPessoasPorId(id):
-    for pessoa in listaPessoa:
-        if pessoa.get('id') == id:
-            return jsonify(pessoa)
+@app.route("/jogadores/<int:id>", methods=['GET'])
+def getUmJogador(id):
+    try:
+        for jogador in jogadores:
+            if(jogador.get('id') == id):
+                return jsonify(jogador), status.HTTP_200_OK
+            else:
+                return jsonify({'mensagem:': "Erro ao buscar"})
+    except Exception as ex:
+        return jsonify({'mensagem:': "Erro ao buscar"})      
 
-@app.route("/pessoas/<int:id>", methods=['PUT'])
-def editPessoa(id):
-    pessoaEditada = request.get_json()
-    for indice, pessoa in enumerate(listaPessoa):
-        if pessoa.get('id') == id:
-            listaPessoa[indice].update(pessoaEditada)
-            return jsonify(listaPessoa[indice])
+@app.route("/jogadores/<int:id>", methods=['PUT'])
+def editPlayer(id):
+    try:
+        jogadorJson = request.get_json()
+        for indice, jogador in enumerate(jogadores):
+            if jogador.get('id') == id:
+                jogadores[indice].update(jogadorJson)
+                return jsonify(jogadores[indice]), status.HTTP_200_OK
+    except Exception as ex:
+        return jsonify({'mensagem:': "Erro ao atualizar"})
 
-@app.route("/pessoas", methods=['POST'])
-def criarPessoa():
-    novaPessoa =  request.get_json()
-    listaPessoa.append(novaPessoa)
-    return jsonify(listaPessoa)
+@app.route("/jogadores", methods=['POST'])
+def criarJogador():
+    try:
+        jogadorJson = request.get_json()
+        jogadores.append(jogadorJson)
+        return jsonify(jogadores), status.HTTP_201_CREATED
+    except Exception as ex:
+        return jsonify({'mensagem:': "Erro ao criar"})
 
-@app.route("/pessoas/<int:id>", methods=['DELETE'])
-def delPessoa(id):
-    for indice,pessoa in enumerate(listaPessoa):
-        if pessoa.get('id') == id:
-            del pessoa[indice]
-    return jsonify(listaPessoa)
+@app.route("/jogadores/<int:id>", methods=['DELETE'])
+def excluirJogador(id):
+    try:
+        for indice, jogador in enumerate(jogadores):
+            if jogador.get('id') == id:
+                del jogadores[indice]
+                return jsonify(jogadores), status.HTTP_204_NO_CONTENT
+            else:
+                return jsonify({'mensagem:': "Erro ao deletar"})
+    except Exception as ex:
+        return jsonify({'mensagem:': "Erro ao deletar"})
 
 
 if __name__ == "__main__":
